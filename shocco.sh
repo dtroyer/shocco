@@ -1,6 +1,6 @@
 #!/bin/sh
 # **shocco** is a quick-and-dirty, literate-programming-style documentation
-# generator written for and in __POSIX shell__. It borrows liberally from
+# generator written for and in `POSIX shell`. It borrows liberally from
 # [Docco][do], the original Q&D literate-programming-style doc generator.
 #
 # `shocco(1)` reads shell scripts and produces annotated source documentation
@@ -72,6 +72,7 @@ file="$1"
 # configure/make system.
 MARKDOWN='@@MARKDOWN@@'
 PYGMENTIZE='@@PYGMENTIZE@@'
+RST2HTML='@@RST2HTML@@'
 
 # We're going to need a `markdown` command to run comments through. This can
 # be [Gruber's `Markdown.pl`][md] (included in the shocco distribution) or
@@ -101,6 +102,9 @@ command -v "$PYGMENTIZE" >/dev/null || {
     echo "$(basename $0): pygmentize command not found." 1>&2
     exit 1
 }
+
+# Pick a processor to use (either markdown or rst)
+PROCESSOR=$RST2HTML
 
 # Work and Cleanup
 # ----------------
@@ -260,13 +264,14 @@ cat -s                                       |
 #
 # Blank lines represent code segments. We want to replace all blank lines
 # with a dividing marker and remove the "DOCS" prefix from docs lines.
-sed '
-    s/^$/##### DIVIDER/
-    s/^DOCS //'                              |
+sed 's/^$/DOCS \
+**DIVIDER**\
+DOCS /'                                      |
+sed 's/^DOCS //'                             |
 
 # The current stream text is suitable for input to `markdown(1)`. It takes
 # our doc text with embedded `DIVIDER`s and outputs HTML.
-$MARKDOWN                                    |
+$PROCESSOR                                    |
 
 # Now this where shit starts to get a little crazy. We use `csplit(1)` to
 # split the HTML into a bunch of individual files. The files are named
@@ -277,7 +282,7 @@ $MARKDOWN                                    |
     csplit -sk                               \
            -f docs                           \
            -n 4                              \
-           - '/<h5>DIVIDER<\/h5>/' '{9999}'  \
+           - '/<strong>DIVIDER<\/strong>/' '{9999}'  \
            2>/dev/null                      ||
     true
 )
@@ -409,7 +414,7 @@ xargs cat                                    |
 # rows and cells. This also wraps each code block in a `<div class=highlight>`
 # so that the CSS kicks in properly.
 {
-    DOCSDIVIDER='<h5>DIVIDER</h5>'
+    DOCSDIVIDER='<p><strong>DIVIDER</strong></p>'
     DOCSREPLACE='</pre></div></td></tr><tr><td class=docs>'
     CODEDIVIDER='<span class="c"># DIVIDER</span>'
     CODEREPLACE='</td><td class=code><div class=highlight><pre>'

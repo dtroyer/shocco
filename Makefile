@@ -31,6 +31,7 @@ shocco: shocco.sh
 	$(SHELL) -n shocco.sh
 	sed -e 's|@@MARKDOWN@@|$(MARKDOWN)|g' \
 	    -e 's|@@PYGMENTIZE@@|$(PYGMENTIZE)|g' \
+	    -e 's|@@RST2HTML@@|$(RST2HTML)|g' \
 	< shocco.sh > shocco+
 	mv shocco+ shocco
 	chmod 0755 shocco

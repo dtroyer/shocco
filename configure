@@ -149,7 +149,7 @@ reconf datadir       "$datadir"
 reconf mandir        "$mandir"
 reconf develmode     "$develmode"
 
-PATH="$(getconf PATH 2>/dev/null || echo /usr/bin:/bin)"
+#PATH="$(getconf PATH 2>/dev/null || echo /usr/bin:/bin)"
 PATH="$bindir:$PATH"
 
 test -d "/usr/local" &&
@@ -196,6 +196,7 @@ stdutil ronn       RONN       ronn
 stdutil markdown   MARKDOWN   markdown Markdown.pl
 stdutil perl       PERL       perl
 stdutil pygmentize PYGMENTIZE pygmentize $PYGMENTIZE
+stdutil rst2html   RST2HTML   rst2html.py
 
 set -e
 
@@ -219,6 +220,12 @@ test -z "$PYGMENTIZE" && {
     exit 3
 }
 
+test -z "$RST2HTML" && {
+    warn "fatal: no rst2html.py found on PATH. install it and try again."
+    warn "       see http://docutils.org/ for more information."
+    exit 3
+}
+
 echo "okay, looks like you have everything we need. generating config files."
 
 
@@ -236,6 +243,7 @@ EOF
 cat <<MESSAGE
 configuration:
   markdown:      $MARKDOWN $INSTALL_MARKDOWN
+  rst2html:      $RST2HTML
   pygmentize:    $PYGMENTIZE
   bindir:        $bindir
   mandir:        $mandir

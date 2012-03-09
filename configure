@@ -196,7 +196,7 @@ stdutil ronn       RONN       ronn
 stdutil markdown   MARKDOWN   markdown Markdown.pl
 stdutil perl       PERL       perl
 stdutil pygmentize PYGMENTIZE pygmentize $PYGMENTIZE
-stdutil rst2html   RST2HTML   rst2html.py
+stdutil rst2html   RST2HTML   rst2html
 
 set -e
 

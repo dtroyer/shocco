@@ -56,12 +56,29 @@ expr -- "$*" : ".*--help" >/dev/null && {
     exit 0
 }
 
-# A custom title may be specified with the `-t` option. We use the filename
-# as the title if none is given.
-test "$1" = '-t' && {
-    title="$2"
-    shift;shift
+function help {
+    cat <<EOF
+shocco.sh - Create literate-programming-style documentation for shell scripts.
+
+Usage: shocco [-t <title>] [-h] [-c <cssurl>] [<source>]
+EOF
+    exit 1
 }
+
+# opts processing
+while getopts :c:ht: c; do
+    case $c in
+        c)  cssurl=$OPTARG;
+            ;;
+        t)  title=$OPTARG;
+            ;;
+        h)
+            help;
+            ;;
+    esac
+done
+shift `expr $OPTIND - 1`
+
 
 # Next argument should be the `<source>` file. Grab it, and use its basename
 # as the title if none was given with the `-t` option.
@@ -339,13 +356,14 @@ sed '
 # [ja]: http://github.com/jashkenas/
 # [do]: http://jashkenas.github.com/docco/
 layout () {
+    local css=${cssurl:-http://jashkenas.github.com/docco/resources/classic/docco.css}
     cat <<HTML
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-eqiv='content-type' content='text/html;charset=utf-8'>
     <title>$1</title>
-    <link rel=stylesheet href="http://jashkenas.github.com/docco/resources/docco.css">
+    <link rel=stylesheet href="${css}">
 </head>
 <body>
 <div id=container>

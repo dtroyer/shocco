@@ -56,7 +56,7 @@ expr -- "$*" : ".*--help" >/dev/null && {
     exit 0
 }
 
-function help {
+help() {
     cat <<EOF
 shocco.sh - Create literate-programming-style documentation for shell scripts.
 

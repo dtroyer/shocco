@@ -147,6 +147,11 @@ PROCESSOR=$RST2HTML
       fi
   )}
 
+TEMPLATEFILE=$WORK/rst2html.txt
+cat > $TEMPLATEFILE <<EOF
+%(body)s
+EOF
+
 # We want to be absolutely sure we're not going to do something stupid like
 # use `.` or `/` as a work dir. Better safe than sorry.
 test -z "$WORK" -o "$WORK" = '/' && {
@@ -291,7 +296,7 @@ sed 's/^DOCS //'                             |
 
 # The current stream text is suitable for input to `markdown(1)`. It takes
 # our doc text with embedded `DIVIDER`s and outputs HTML.
-$PROCESSOR --quiet                           |
+$PROCESSOR --quiet --template $TEMPLATEFILE  |
 
 # Now this where shit starts to get a little crazy. We use `csplit(1)` to
 # split the HTML into a bunch of individual files. The files are named
